@@ -1,0 +1,21 @@
+{
+  "name": "XeThru",
+  "version": "0.0.1",
+  "description": "XeThru node.js",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "XeThru",
+    "Novelda",
+    "Node.js",
+    "serial",
+    "socket.io"
+  ],
+  "author": "Sigvart M. Hovland",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.12.3"
+  }
+}

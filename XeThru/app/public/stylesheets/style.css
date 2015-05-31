@@ -1,0 +1,33 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: #4a2f58;
+  color: #fff;
+}
+
+a {
+  color: #4a2f58;
+}
+
+.aGraph {
+	
+	border-width: 1px;
+	border-style: solid;
+	border-color: #fff;
+}
+
+path {
+  stroke: white;
+  stroke-width: 1;
+  fill: none;
+}
+
+a.logo {
+  height: 40px;
+  display: block;
+  float: left;
+  width: 180px;
+  text-align: center;
+  transition: all ease-in-out .25s;
+  -webkit-transition: all ease-in-out .25s;
+}

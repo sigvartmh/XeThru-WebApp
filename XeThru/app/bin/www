@@ -8,7 +8,7 @@ var app = require('../app');
 var debug = require('debug')('app:server');
 var http = require('http');
 var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("COM10", {
+var serialPort = new SerialPort("COM9", {
   baudrate: 115200
 });
 
@@ -36,7 +36,7 @@ var io = require('socket.io')(server);
 serialPort.on("open", function () {
   console.log('open');
   io.on('connection', function (socket) {
-  
+
     serialPort.on('data', function(data) {
       console.log('data received: ' + data);
       str = String(data)
@@ -44,13 +44,13 @@ serialPort.on("open", function () {
       if(str[0] === 'i'){
         try {var v = parseInt(str.match(/\d+/)[0]);}
         catch(err){
-          
+
         }
         console.log('Recived i data: ' + v);
         socket.emit('serial', v);
       }else if(str[0] === 'j'){
         try {var v = parseInt(str.match(/\d+/)[0]);}catch(err){
-          
+
         }
         console.log('Recived j data: ' + v);
         socket.emit('serial2', v);

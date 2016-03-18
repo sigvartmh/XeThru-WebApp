@@ -52,18 +52,18 @@ app.controller("XTController", ["XTWlanManager", "$scope", "$location", "$timeou
             });
         }
 
-        $scope.change_selection = function(cell) {
+        $scope.change_selection = function(wlan) {
             $scope.network_passcode = "";
-            $scope.selected_cell = cell;
-            $scope.show_passcode_entry_field = (cell != null) ? true : false;
+            $scope.selected_cell = wlan;
+            $scope.show_passcode_entry_field = (wlan != null) ? true : false;
         }
 
         $scope.submit_selection = function(password) {
             if (!$scope.selected_cell) return;
 
             var wifi_info = {
-                wifi_ssid:      $scope.selected_cell["ssid"],
-                wifi_passcode:  password,
+                ssid:      $scope.selected_cell["ssid"],
+                password:  password,
             };
 
             console.log(wifi_info)
@@ -95,7 +95,7 @@ app.service("XTWlanManager", ["$http",
                 return t;
             },
             enable_wifi: function(wifi_info) {
-                return $http.post("/api/enable_wifi", wifi_info);
+                return $http.post("/wlan/api/connect", wifi_info);
             }
         };
     }]

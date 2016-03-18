@@ -1,5 +1,5 @@
 import subprocess, json, os, jinja2
-from flask import Flask, jsonify, render_template, url_for, send_from_directory
+from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
 app = Flask(__name__)
 
 sresult = [
@@ -64,9 +64,14 @@ def send_test(path):
     return "test:" + path
 
 @app.route('/wlan/api/connect', methods=['POST'])
-def setup_wifi(ssid, password):
+def setup_wifi():
+    print request.json
+    if not request.json or not 'ssid' in request.json:
+        abort(400)
+    print request
 	#replace ssid and pwd in template
-	return True
+    response = { 'status': "sucess"}
+    return jsonify(response)
 
 
 loader = jinja2.FileSystemLoader( os.path.dirname(__file__))

@@ -14,7 +14,6 @@ output = { "wlan":{
 
 
 def write_config(var, path, output):
-
 	template = env.get_template(path)
 	try:
 		temp = template.render(var)

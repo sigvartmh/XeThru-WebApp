@@ -1,0 +1,19 @@
+{
+	"config":{
+		"driver"	:	"nl80211",
+		"interface" :	"wlan0",
+		"ssid"		:	"XeThruAP",
+		"pwd" 		:	"XeThru2016",
+		"domain"	:	"xethru.config",
+		"ip"		:	"192.168.1.1",
+		"netmask"	:	"255.255.255.0",
+		"subnet"	: {
+			"ip"	:	"192.168.1.0",
+			"baddr" :	"192.168.1.255",
+			"range"	: {
+				"start" : "192.168.1.10",
+				"end"	: "192.168.1.50"
+			}
+		}
+	}
+}

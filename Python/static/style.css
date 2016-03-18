@@ -1,3 +1,10 @@
+.logo{
+    width: 180pt;
+    padding-top: 5px;
+    display: block;
+    margin: auto;
+}
+
 .xethru{
     color: #fff;
     font-size: 20pt;

@@ -24,9 +24,6 @@ sresult = [
 
 @app.route('/')
 def index():
-    #url_for('static', filename='font/Roboto-Regular.woff2')
-    #url_for('static', filename='Roboto-Regular.woff')
-    #url_for('static', filename='Roboto-Regular.ttf')
     url_for('static', filename='style.css')
     url_for('static', filename='icons.css')
     url_for('static', filename='materialize.min.css')
@@ -39,7 +36,7 @@ def index():
 
 @app.route('/wlan/api/scan', methods=['GET'])
 def list_wifi():
-    out = subprocess.check_output(["bash", "genwifi.sh"])
+    out = subprocess.check_output(["sudo","bash", "genwifirbpi.sh"])
     escapes = ''.join([chr(char) for char in range(1, 32)])
     s = out.translate(None,escapes)
     jlist = [p+"}" for p in s.split("}") if p != ""]
@@ -59,6 +56,7 @@ def list_wifi():
 def send_font(filename):
     print send_from_directory('font/roboto/', filename)
     return send_from_directory('font/roboto/', filename)
+
 @app.route('/font/<path:path>')
 def send_test(path):
     return "test:" + path
@@ -68,8 +66,9 @@ def setup_wifi():
     print request.json
     if not request.json or not 'ssid' in request.json:
         abort(400)
-    print request
-	#replace ssid and pwd in template
+    print request.json
+    #replace ssid and pwd in template
+    enable_wifi(request.json)
     response = { 'status': "sucess"}
     return jsonify(response)
 
@@ -90,10 +89,33 @@ def write_config(var, path, output):
 def check_connection():
     return True
 
+def enable_wifi(wlan):
+    print "Enable wifi called"
+    f = open("config.json","r")
+    print "Config.json opened"
+    jsondata = f.read()
+    print "Config.json loaded"
+    f.close()
+    print "Config.json closed"
+    config = json.loads(jsondata)['config']
+    print "json loaded into config"
+    print "wlan loaded into json"
+    print wlan
+    print config['interface']
+    path = "linux_config/etc/network/interfaces.wifi.template"
+    output = "/etc/network/interfaces"
+    write_config(wlan,path,output)
+    print "Stopping dhcp server"
+    out = subprocess.check_output(["sudo", "service", "isc-dhcp-server", "stop"])
+    print "Stopping hostapd"
+    out = subprocess.check_output(["sudo", "service", "hostapd", "stop"])
+    reset_interaces(config)
+    return True
+
 def setup_ap(config):
     #Define ap interface setup for wlan with static ip and netmask
     path = "linux_config/etc/network/interfaces.ap.template"
-    output = "etc/network/interfaces"
+    output = "/etc/network/interfaces"
     ifsetup = { "ap":{
                 "interface": config['interface'],
                 "ip" : config['ip'],
@@ -104,7 +126,7 @@ def setup_ap(config):
 
     #Define hostapd setup with template
     path = "linux_config/etc/hostapd/hostapd.conf.template"
-    output = "etc/hostapd/hostapd.conf"
+    output = "/etc/hostapd/hostapd.conf"
     #driver = check_driver() check if you can use the default driver
     hostapd_setup = { "hostapd" : {
                         "interface" : config['interface'],
@@ -118,7 +140,7 @@ def setup_ap(config):
 
     #Define DHCP conf
     path = "linux_config/etc/dhcp/dhcpd.conf.template"
-    output = "etc/dhcp/dhcpd.conf"
+    output = "/etc/dhcp/dhcpd.conf"
     dhcpap_setup = { "dhcp": {
                         "ap": True,
                         "subnet" : {
@@ -138,25 +160,32 @@ def setup_ap(config):
 
     #Define DHCP isc server config
     path = "linux_config/etc/default/isc-dhcp-server.template"
-    output = "etc/default/isc-dhcp-server"
+    output = "/etc/default/isc-dhcp-server"
     iscdhcp_setup = { "isc":{
                         "interface":config['interface']
                         }
                     }
     write_config(iscdhcp_setup, path, output)
+    reset_interfaces(config)
     start_ap(config)
     return True
 
 def reset_interfaces(config):
-    out = subprocess.check_output(["sudo","ls", "-l"])
-    print out
-    #out = subprocess.check_output(["sudo", "ifdown", config['interface']])
-    #out = subprocess.check_output(["sudo", "ifup", config['interface']])
+    print "Restarting interface " + str(config['interface'])
+    #out = subprocess.check_output(["sudo","ls", "-l"])
+    out = subprocess.check_output(["sudo", "ifdown", config['interface']])
+    out = subprocess.check_output(["sudo", "ifup", config['interface']])
 
 def start_ap(config):
-    reset_interfaces(config)
-    #out = subprocess.check_output(["service", "isc-dhcp-server", "restart"])
-    #out = subprocess.check_output(["service", "hostapd", "restart"])
+    #reset_interfaces(config)
+    out = subprocess.check_output(["sudo", "service", "isc-dhcp-server", "restart"])
+    print out
+    #out = subprocess.check_output(["sudo", "service", "hostapd", "restart"])
+    #out = subprocess.check_output(["sudo", "service", "hostapd", "restart"])
+    #out = subprocess.call(["sudo", "/usr/sbin/hostapd", "/etc/hostapd/hostapd.conf"])
+    arg = ["sudo", "/usr/sbin/hostapd", "/etc/hostapd/hostapd.conf"]
+    p = subprocess.Popen(arg)
+    print out
 
 '''
 def setup_wifi():
@@ -170,7 +199,7 @@ if __name__ == '__main__':
     print config['interface']
     #check_connectivity() if no run setup_ap
     setup_ap(config)
-    app.run(debug=True)
+    app.run(host="0.0.0.0",port=80,debug=False)
 
   #gawk -F: '{ print $1 }' /etc/passwd
 

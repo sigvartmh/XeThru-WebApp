@@ -1,7 +1,5 @@
 interface={{ hostapd.interface }}
-
 driver={{ hostapd.driver }}
-
 ssid={{ hostapd.ssid }}
 hw_mode=g
 channel=6

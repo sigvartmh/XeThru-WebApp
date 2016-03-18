@@ -13,11 +13,7 @@ max-lease-time 7200;
 
 # If this DHCP server is the official DHCP server for the local
 # network, the authoritative directive should be uncommented.
-{[ if (enable_ap) { ]}
 authoritative;
-{[ } else { ]}
-#authoritative
-{[ } ]}
 
 # Use this to send dhcp log messages to a different log file (you also
 # have to hack syslog.conf to complete the redirection).
@@ -30,4 +26,5 @@ subnet {{ dhcp.subnet.ip }} netmask {{ dhcp.netmask }} {
   default-lease-time 600;
   max-lease-time 7200;
   option domain-name "{{ dhcp.domain }}";
+  option domain-name-servers 192.168.44.1, 127.0.0.1;
 }

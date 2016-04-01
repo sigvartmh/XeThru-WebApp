@@ -35,9 +35,11 @@ class RaspberryProvisioner:
     
     def enable_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
+        output = "/etc/network/interfaces"
         self.write_config(info,path,output)
 
         path = "linux_config/etc/dhcp/dhcpd.conf.template"
+        output = "/etc/dhcp/dhcpd.conf"
         self.config["enable_ap"] = False
         self.write_config(self.config, path, output)
 
@@ -61,18 +63,22 @@ class RaspberryProvisioner:
         #Hostapd setup
         #driver = check_driver() check if you can use the default driver
         path = "linux_config/etc/hostapd/hostapd.conf.template"
+        output = "/etc/hostapd/hostapd.conf"
         self.write_config(self.config, path, output)
 
         path = "linux_config/etc/default/hostapd.template"
+        output = "/etc/default/hostapd"
         self.write_config(self.config, path, output)
 
         #Define DHCP conf
         path = "linux_config/etc/dhcp/dhcpd.conf.template"
+        output = "/etc/dhcp/dhcpd.conf"
         self.config["enable_ap"] = True
         self.write_config(self.config, path, output)
 
         #Define DHCP isc server config
         path = "linux_config/etc/default/isc-dhcp-server.template"
+        output = "/etc/default/isc-dhcp-server"
         self.write_config(self.config, path, output)
 
         #Define DNS config

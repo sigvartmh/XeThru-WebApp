@@ -56,6 +56,7 @@ class RaspberryProvisioner:
         #service isc-dhcp-server stop
     
     def enable(self):
+        self.reset_interfaces()
         self.dhcp_service("restart")
         self.hostapd_service("restart")
         self.reset_interfaces()

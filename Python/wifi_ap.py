@@ -39,46 +39,12 @@ def setup_wifi():
         abort(400)
     print request.json
     #replace ssid and pwd in template
-    ap.enable_wifi(request.json)
+    ap.connect_wifi(request.json)
     response = { 'status': "sucess"}
     return jsonify(response)
 
-def check_connection():
+def check_connection(): #If this false restart AP
     return True
-
-def enable_wifi(wlan):
-    print "wlan loaded into json"
-    print wlan
-    print ap.config['interface']
-    
-    print "Stopping dhcp server"
-    out = subprocess.check_output(["sudo", "service", "isc-dhcp-server", "stop"])
-    print "Stopping hostapd"
-    out = subprocess.check_output(["sudo", "service", "hostapd", "stop"])
-    reset_interaces(config)
-    return True
-
-def setup_ap(config):
-    reset_interfaces(config)
-    start_ap(config)
-    return True
-
-def reset_interfaces(config):
-    print "Restarting interface " + str(config['interface'])
-    #out = subprocess.check_output(["sudo","ls", "-l"])
-    out = subprocess.check_output(["sudo", "ifdown", config['interface']])
-    out = subprocess.check_output(["sudo", "ifup", config['interface']])
-
-def start_ap(config):
-    #reset_interfaces(config)
-    out = subprocess.check_output(["sudo", "service", "isc-dhcp-server", "restart"])
-    print out
-    #out = subprocess.check_output(["sudo", "service", "hostapd", "restart"])
-    #out = subprocess.check_output(["sudo", "service", "hostapd", "restart"])
-    #out = subprocess.call(["sudo", "/usr/sbin/hostapd", "/etc/hostapd/hostapd.conf"])
-    arg = ["sudo", "/usr/sbin/hostapd", "/etc/hostapd/hostapd.conf"]
-    p = subprocess.Popen(arg)
-    print out
 
 if __name__ == '__main__':
     #Sets up the necessary config files for access point moode

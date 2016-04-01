@@ -37,7 +37,7 @@ class RaspberryProvisioner:
         #service hostapd restart
         print "hostapd " + command
     
-    def enable_wifi(self,info):
+    def connect_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
         output = "/etc/network/interfaces"
         self.write_config(info,path,output)

@@ -27,12 +27,12 @@ class RaspberryProvisioner:
         return jsondict
 
     def dhcp_service(self, command):
-        out = subprocess.check_output(["sudo", "service", "isc-dhcp-server", command])
+        out = subprocess.call(["sudo", "service", "isc-dhcp-server", command])
         print out
         print "DHCP server " + command
     
     def hostapd_service(self, command):
-        out = subprocess.check_output(["sudo", "service", "hostapd", command])
+        out = subprocess.call(["sudo", "service", "hostapd", command])
         print out
         #service hostapd restart
         print "hostapd " + command
@@ -56,7 +56,6 @@ class RaspberryProvisioner:
     def enable(self):
         self.reset_interfaces()
         self.dhcp_service("restart")
-        self.reset_interfaces()
         self.hostapd_service("restart")
         out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
         print out

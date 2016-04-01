@@ -1,25 +1,8 @@
 import subprocess, json, os, jinja2
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
+from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
-
-sresult = [
-{ 'ssid': "Xethru Test",
-  'mac': "00:00:00:f0",
-  'strenght' : 2,
-  'security': True
-  },
-  { 'ssid': "Xethru Test2",
-  'mac': "00:00:00:f1",
-  'strenght' : 2,
-  'security': False
-  },
-  { 'ssid': "Xethru Test3",
-  'mac': "00:00:00:f2",
-  'strenght' : 2,
-  'security': True
-  }
-]
-
+ap  = RP()
 
 
 @app.route('/')
@@ -36,20 +19,8 @@ def index():
 
 @app.route('/wlan/api/scan', methods=['GET'])
 def list_wifi():
-    out = subprocess.check_output(["sudo","bash", "genwifirbpi.sh"])
-    escapes = ''.join([chr(char) for char in range(1, 32)])
-    s = out.translate(None,escapes)
-    jlist = [p+"}" for p in s.split("}") if p != ""]
-    output = '{ "scan": ['
-    for jsonobj in jlist:
-        output+=jsonobj
-        output+=","
-    created_json = output[:-1]+']}'
-    print created_json
-    jsondict = json.loads(created_json)
-    #subprocess.check_output("iw dev wlan 0 scan | gawk -f wifi_scan.awk")
-    #return jsonify({'scan':[ out ]})
-    return jsonify(jsondict)
+    res = ap.scan()
+    return jsonify(res)
     #return jsonify({'scan': sresult})
 
 @app.route('/font/roboto/<path:filename>')
@@ -68,43 +39,18 @@ def setup_wifi():
         abort(400)
     print request.json
     #replace ssid and pwd in template
-    enable_wifi(request.json)
+    ap.enable_wifi(request.json)
     response = { 'status': "sucess"}
     return jsonify(response)
-
-
-loader = jinja2.FileSystemLoader( os.path.dirname(__file__))
-env = jinja2.Environment( loader=loader )
-def write_config(var, path, output):
-	template = env.get_template(path)
-	try:
-		temp = template.render(var)
-	except:
-		print "Wrong in template"
-		raise
-
-	with open(output, "w") as conf:
-		conf.write(temp)
 
 def check_connection():
     return True
 
 def enable_wifi(wlan):
-    print "Enable wifi called"
-    f = open("config.json","r")
-    print "Config.json opened"
-    jsondata = f.read()
-    print "Config.json loaded"
-    f.close()
-    print "Config.json closed"
-    config = json.loads(jsondata)['config']
-    print "json loaded into config"
     print "wlan loaded into json"
     print wlan
-    print config['interface']
-    path = "linux_config/etc/network/interfaces.wifi.template"
-    output = "/etc/network/interfaces"
-    write_config(wlan,path,output)
+    print ap.config['interface']
+    
     print "Stopping dhcp server"
     out = subprocess.check_output(["sudo", "service", "isc-dhcp-server", "stop"])
     print "Stopping hostapd"
@@ -113,59 +59,6 @@ def enable_wifi(wlan):
     return True
 
 def setup_ap(config):
-    #Define ap interface setup for wlan with static ip and netmask
-    path = "linux_config/etc/network/interfaces.ap.template"
-    output = "/etc/network/interfaces"
-    ifsetup = { "ap":{
-                "interface": config['interface'],
-                "ip" : config['ip'],
-                "netmask": config['netmask']
-                }
-            }
-    write_config(ifsetup, path, output)
-
-    #Define hostapd setup with template
-    path = "linux_config/etc/hostapd/hostapd.conf.template"
-    output = "/etc/hostapd/hostapd.conf"
-    #driver = check_driver() check if you can use the default driver
-    hostapd_setup = { "hostapd" : {
-                        "interface" : config['interface'],
-                        "ssid" : config['ssid'],
-                        "password": config['pwd'],
-                        "driver": config['driver']
-                        }
-                    }
-    write_config(hostapd_setup, path, output)
-
-
-    #Define DHCP conf
-    path = "linux_config/etc/dhcp/dhcpd.conf.template"
-    output = "/etc/dhcp/dhcpd.conf"
-    dhcpap_setup = { "dhcp": {
-                        "ap": True,
-                        "subnet" : {
-                            "ip" : config['subnet']['ip'],
-                            "range":{
-                                "start": config['subnet']['range']['start'],
-                                "end"  : config['subnet']['range']['end']
-                            },
-                            "baddr": config['subnet']['baddr']
-                        },
-                        "ip": config['ip'],
-                        "netmask": config['netmask'],
-                        "domain": config['domain']
-                      }
-                    }
-    write_config(dhcpap_setup, path, output)
-
-    #Define DHCP isc server config
-    path = "linux_config/etc/default/isc-dhcp-server.template"
-    output = "/etc/default/isc-dhcp-server"
-    iscdhcp_setup = { "isc":{
-                        "interface":config['interface']
-                        }
-                    }
-    write_config(iscdhcp_setup, path, output)
     reset_interfaces(config)
     start_ap(config)
     return True
@@ -187,18 +80,12 @@ def start_ap(config):
     p = subprocess.Popen(arg)
     print out
 
-'''
-def setup_wifi():
-'''
-
 if __name__ == '__main__':
-    f = open("config.json","r")
-    jsondata = f.read()
-    f.close()
-    config = json.loads(jsondata)['config']
-    print config['interface']
-    #check_connectivity() if no run setup_ap
-    setup_ap(config)
+    #Sets up the necessary config files for access point moode
+    ap.setup()
+    #Sets the raspberry into Access point mode
+    ap.enable()
+    #Start flask server
     app.run(host="0.0.0.0",port=80,debug=False)
 
   #gawk -F: '{ print $1 }' /etc/passwd

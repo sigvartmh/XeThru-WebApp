@@ -7,7 +7,7 @@ auto lo
 iface lo inet loopback
 iface eth0 inet dhcp
 
-allow-hotplug {{ ap.interface }}
-iface {{ ap.interface }} inet static
-  address {{ ap.ip }}
-  netmask {{ ap.netmask }}
+allow-hotplug {{ interface }}
+iface {{ interface }} inet static
+  address {{ ip }}
+  netmask {{ netmask }}

@@ -3,7 +3,7 @@
 		"driver"	:	"nl80211",
 		"interface" :	"wlan0",
 		"ssid"		:	"XeThruAP",
-		"pwd" 		:	"XeThru2016",
+		"password" 	:	"XeThru2016",
 		"domain"	:	"xethru.config",
 		"ip"		:	"192.168.44.1",
 		"netmask"	:	"255.255.255.0",

@@ -54,10 +54,12 @@ class RaspberryProvisioner:
         #service isc-dhcp-server stop
     
     def enable(self):
-        |
         self.reset_interfaces()
+        time.sleep(5)
         self.dhcp_service("restart")
-        self.hostapd_service("restart")
+        time.sleep(5)
+        #self.hostapd_service("restart")
+        #time.sleep(5)
         out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
         print out
 
@@ -101,8 +103,9 @@ class RaspberryProvisioner:
 
     def reset_interfaces(self):
         print "Restarting interface " + str(self.config['interface'])
-        out = subprocess.check_output(["sudo", "ifdown", self.config['interface']])
-        out = subprocess.check_output(["sudo", "ifup", self.config['interface']])
+        out = subprocess.call(["sudo", "ifdown", self.config['interface']])
+        time.sleep(1)
+        out = subprocess.call(["sudo", "ifup", self.config['interface']])
 
     def write_config(self,var, path, output):
         template = self.env.get_template(path)

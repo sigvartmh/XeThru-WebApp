@@ -58,7 +58,7 @@ class RaspberryProvisioner:
         self.dhcp_service("restart")
         self.reset_interfaces()
         self.hostapd_service("restart")
-        out = subprocess.check_output(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
+        out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
         print out
 
 

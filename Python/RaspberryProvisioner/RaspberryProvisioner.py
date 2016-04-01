@@ -1,4 +1,4 @@
-import subprocess, json, os, jinja2
+import subprocess, json, os, jinja2, time
 
 class RaspberryProvisioner:
     
@@ -54,6 +54,7 @@ class RaspberryProvisioner:
         #service isc-dhcp-server stop
     
     def enable(self):
+        |
         self.reset_interfaces()
         self.dhcp_service("restart")
         self.hostapd_service("restart")

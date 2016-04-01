@@ -18,8 +18,12 @@ class RaspberryProvisioner:
         print jlist
         output = '{ "scan": ['
         for jsonobj in jlist:
-            output+=jsonobj
-            output+=","
+            try:
+                json.loads(jsonobj)
+                output+=jsonobj
+                output+=","
+            except ValueError:
+                print "Weird ssid name"
         created_json = output[:-1]+']}'
         jsondict = json.loads(created_json)
         return jsondict

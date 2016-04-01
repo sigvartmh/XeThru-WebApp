@@ -13,7 +13,9 @@ class RaspberryProvisioner:
         out = subprocess.check_output(["sudo","bash", "genwifirbpi.sh"])
         escapes = ''.join([chr(char) for char in range(1, 32)])
         s = out.translate(None,escapes)
+        print s
         jlist = [p+"}" for p in s.split("}") if p != ""]
+        print jlist
         output = '{ "scan": ['
         for jsonobj in jlist:
             output+=jsonobj
@@ -57,7 +59,7 @@ class RaspberryProvisioner:
     def setup(self):
         #write
         path = "linux_config/etc/network/interfaces.ap.template"
-        output = "etc/network/interfaces"
+        output = "/etc/network/interfaces"
         self.write_config(self.config, path, output)
         
         #Hostapd setup

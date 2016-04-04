@@ -54,15 +54,17 @@ class RaspberryProvisioner:
         #service isc-dhcp-server stop
     
     def enable(self):
-        self.reset_interfaces()
         time.sleep(1)
-        self.dhcp_service("restart")
+        self.dhcp_service("start")
         time.sleep(1)
-        self.hostapd_service("restart")
+        self.hostapd_service("start")
         #out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
 
 
     def setup(self):
+        #stop services
+        self.dhcp_service("stop")
+        self.hostapd_service("stop")
         #write
         path = "linux_config/etc/network/interfaces.ap.template"
         output = "/etc/network/interfaces"
@@ -90,7 +92,8 @@ class RaspberryProvisioner:
         self.write_config(self.config, path, output)
 
         #Define DNS config
-
+        #Load config 
+        self.reset_interfaces()
 
     def teardown_ap(self):
         path = "linux_config/etc/hostapd/hostapd.conf.template"

@@ -55,13 +55,11 @@ class RaspberryProvisioner:
     
     def enable(self):
         self.reset_interfaces()
-        time.sleep(5)
+        time.sleep(1)
         self.dhcp_service("restart")
-        time.sleep(5)
-        #self.hostapd_service("restart")
-        #time.sleep(5)
-        out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
-        print out
+        time.sleep(1)
+        self.hostapd_service("restart")
+        #out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
 
 
     def setup(self):

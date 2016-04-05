@@ -54,11 +54,8 @@ class RaspberryProvisioner:
         #service isc-dhcp-server stop
     
     def enable(self):
-        time.sleep(1)
         self.dhcp_service("start")
-        time.sleep(1)
         self.hostapd_service("start")
-        #out = subprocess.call(["sudo", "hostapd", "-B", "/etc/hostapd/hostapd.conf"])
 
 
     def setup(self):

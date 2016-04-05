@@ -114,6 +114,9 @@ class RaspberryProvisioner:
             raise
         with open(output, "w") as conf:
             conf.write(temp)
+    def check_connection():
+        subprocess.call(["ping", "-i", self.config['interface'], self.config['server']])
+
 
 #if __name__ == '__main__':
 #    rp = RaspberryProvisioner()

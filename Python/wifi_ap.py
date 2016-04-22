@@ -43,11 +43,11 @@ def check_connectivity():
     return jsonify({'status' : ap.check_connectivity()})
 
 if __name__ == '__main__':
-    while(ap.check_connection("wlan0")):
+    #FIXME: This check should also be running while flask server is running.
+    while(ap.check_connection("wlan0")): #TODO: could add  or (ap.check_connection("eth0") && ap.check_connectivity())
         time.sleep(10)
-	print "Wifi allready connected"
-        
-    #Sets up the necessary config files for access point moode
+   
+    #Sets up the necessary config files for access point mode
     ap.setup()
     #Sets the raspberry into Access point mode
     ap.enable()

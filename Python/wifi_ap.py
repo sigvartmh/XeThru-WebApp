@@ -43,6 +43,8 @@ def check_connectivity():
     return jsonify({'status' : ap.check_connectivity()})
 
 if __name__ == '__main__':
+    if(ap.check_connection("wlan0")):
+        return
     #Sets up the necessary config files for access point moode
     ap.setup()
     #Sets the raspberry into Access point mode

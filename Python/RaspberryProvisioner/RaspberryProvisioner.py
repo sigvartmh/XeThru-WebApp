@@ -50,7 +50,7 @@ class RaspberryProvisioner:
    
         print "Resetting interfaces from connection"
         self.reset_interfaces()
-        self.check_wifi(self.config['interface'])
+        self.check_connection(self.config['interface'])
         pass
     
     def enable(self):
@@ -133,7 +133,7 @@ class RaspberryProvisioner:
         with open(output, "w") as conf:
             conf.write(temp)
     
-    def check_wifi(self,interface):
+    def check_connection(self,interface):
         out = ni.ifaddresses(interface)
         try:
            ip = out[2][0]['addr']

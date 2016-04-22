@@ -1,4 +1,3 @@
-import subprocess, json, os, jinja2
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
 from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
@@ -18,7 +17,11 @@ def index():
 
 @app.route('/wlan/api/scan', methods=['GET'])
 def list_wifi():
-    res = ap.scan()
+    res = {"scan":[{"ssid":"test",
+            "encryption" : 
+            "WPA",
+            "mac" :"f4:cf:e2:40:a3:30"},
+            {"ssid":"test3","encryption" : "WPA","mac" :"f3:cf:e2:40:a3:30"}]}
     return jsonify(res)
 
 @app.route('/font/roboto/<path:filename>')
@@ -44,4 +47,4 @@ def check_connectivity():
 
 if __name__ == '__main__':
     #Start flask server
-    app.run(host="0.0.0.0",port=80,debug=True)
+    app.run(host="0.0.0.0",port=3000,debug=True)

@@ -11,15 +11,15 @@
     <!-- this needs to be downloaded and added to folder -->
 </head>
 <body ng-controller = "XTController" ng-keyup = "$event.keyCode == 27 ? change_selection(null) : ''">
-<nav class="xethru z-depth-1"  role="navigation">
+<header>
+<nav class="xethru banner z-depth-1">
 <div class="nav-wrapper xethru">
-  <center>
-  <div class="container">
-    <div class="row">
-      <div class="col s1 m1">
+  <div class="container banner">
+    <div class="row banner">
+      <div class="col s3 m1 margtop">
       <i class="material-icons">perm_scan_wifi</i>
       </div>
-      <div class="col s4 m10">
+      <div class="col s7 m10">
       <div class="logo">
         <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="30px" x="0px" y="0px" viewBox="0 0 180 40" enable-background="new 0 0 180 40" xml:space="preserve" >
         <g>
@@ -31,7 +31,7 @@
         </svg>
         </div>
       </div>
-      <div class="col s1 m1 xethru">
+      <div class="col s1 m1 xethru margtop">
       <a href = "#rescan" ng-click = "rescan()" >
         <i class="material-icons" ng-class = "{ 'rotate': scan_running }">replay</i>
         </a>
@@ -40,6 +40,7 @@
   </div>
 </div>
 </nav>
+</header>
 <div class="progress marg0 z-depth-1" ng-class = "{ 'hide': !scan_running }" style="background-color: #392073;">
       <div class="indeterminate" style="background-color: #6950A3;"></div>
 </div>

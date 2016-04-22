@@ -5,6 +5,17 @@
     margin: auto;
 }
 
+.banner{
+    height: 56pt;
+}
+@media screen and (max-width: 600px){
+    .margtop{
+        margin-top: 10pt;
+    }
+
+
+}
+
 .xethru{
     color: #fff;
     font-size: 20pt;

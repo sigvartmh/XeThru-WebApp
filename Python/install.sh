@@ -10,3 +10,4 @@ for i in `cat dependencies.txt`;
 do apt-get install $i -y;
 done
 pip install -r requirements.txt
+apt-get remove python-dev

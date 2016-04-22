@@ -43,7 +43,7 @@ def setup_wifi():
     response = { 'status': "sucess"}
     return jsonify(response)
 
-def check_connection(): #If this false restart AP
+def check_connectivity(): #If this false restart AP
     return True
 
 if __name__ == '__main__':

@@ -1,3 +1,4 @@
 isc-dhcp-server
 hostapd
 iw
+netifaces

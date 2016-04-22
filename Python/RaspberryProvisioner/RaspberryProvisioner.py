@@ -1,4 +1,5 @@
-import subprocess, json, os, jinja2, time
+import subprocess, json, os, jinja2, time, socket
+import netifaces as ni
 
 class RaspberryProvisioner:
     
@@ -49,8 +50,10 @@ class RaspberryProvisioner:
 
         self.dhcp_service("stop")
         self.hostapd_service("stop")
+	print "resetting interfaces from connection"
         self.reset_interfaces()
-        pass
+	self.check_wifi()
+	pass
         #service isc-dhcp-server stop
     
     def enable(self):
@@ -103,7 +106,9 @@ class RaspberryProvisioner:
         print "Restarting interface " + str(self.config['interface'])
         out = subprocess.call(["sudo", "ifdown", self.config['interface']])
         time.sleep(1)
+	#Maybe use Popen
         out = subprocess.call(["sudo", "ifup", self.config['interface']])
+	pass
 
     def write_config(self,var, path, output):
         template = self.env.get_template(path)
@@ -114,9 +119,29 @@ class RaspberryProvisioner:
             raise
         with open(output, "w") as conf:
             conf.write(temp)
+    
     def check_connection():
         subprocess.call(["ping", "-i", self.config['interface'], self.config['server']])
 
+    def check_wifi(self):
+	out = ni.ifaddresses('wlan0')
+        print out
+        try:
+           ip = out[2][0]['addr']
+        except:
+	   self.setup()
+	   self.enable()
+           print "No connection restarting AP"
+    def check_connectivity():
+	server = "8.8.8.8"
+	print "Checking for connectivity"
+	print server
+	try:
+	    s = socket.create_connection((host, 800), 2)
+	    return True
+        except:
+	    print "Not connection"
+	    return False
 
 #if __name__ == '__main__':
 #    rp = RaspberryProvisioner()

@@ -54,42 +54,28 @@
       <div class="collapsible-body">
         <div class="row">
         <div class="col s7"><span class="details">MAC: {{ cell.mac }}</span>
-        <input type = 'password' placeholder = 'Password' ng-model ="password" ng-keypress = "(($event.keyCode === 13) && (password !== undefined) )? submit_selection(password) : console.log(test)" />
-        <a class="waves-effect waves-light btn xethru_btn " ng-click='submit_selection(password)'>Connect</a>
-
+        <input type='password' placeholder = 'Password' ng-model ="password" ng-keypress = "(($event.keyCode === 13) && (password !== undefined) )? submit_selection(password) : console.log(test)" />
+        <a class="waves-effect waves-light btn xethru_btn " ng-click='submit_selection(password)' onclick="$('#connecting').openModal();">Connect</a> 
         </div></div>
       </div>
     </li>
 </div>
 {% endraw %}
-
+ <!-- Modal Structure -->
+  <div id="connecting" class="modal">
+    <div class="modal-content">
+      <h4>Connecting to network</h4>
+      <p>The RaspberryPi will now attempt to join your selected network with the SSID and Password provided. If the RaspberryPi can't connect to the network. It will appear as hotspot again within 2 minutes if it cannot optain a connection to the network.</p>
+      <p> If this happens it's usually due to wrongly typed passwords or the desired network refuses to give the RaspberryPi an IP address.</p>
+    </div>
+    <div class="modal-footer">
+      <a href class=" modal-action modal-close waves-effect waves-green btn-flat xethru_btn">Close</a>
+    </div>
+  </div>
 <!-- Scripts load last -->
 <script type="text/javascript" src="static/jquery.min.js"></script>
 <script type="text/javascript" src="static/materialize.min.js"></script>
 <script src="static/angular.min.js"></script>
 <script src="static/app.js"></script>
-
-<!-- 
-<script type="text/javascript">
-
-$.ajax({
-url: "/wlan/api/scan",
-dataType: "json",
-complete: function( resp ) {
-console.log(resp);},
-success: function(data){
-  	for (var i = data.scan.length - 1; i >= 0; i--){
-  		if (data.scan[i].security != "NONE") {
-  		 $("#wlans").append('<li><div class="collapsible-header">'+data.scan[i].ssid+' <i class="material-icons">signal_wifi_4_bar_lock</i></div><div class="collapsible-body"><div class="row"><div class="col s7"><span class="details">MAC: '+data.scan[i].mac+'</span><input type = \'password\' placeholder = \'Password\' /><a class="waves-effect waves-light btn xethru_btn " ng-click=\'submit_selection(password)\'>Connect</a></div></div></div></li>');
-  		}else{
-  			$("#wlans").append('<li><div class="collapsible-header">'+data.scan[i].ssid+'<i class="material-icons">network_wifi</i></div><div class="collapsible-body"><div class="row"><div class="col s7"><span class="details">MAC: '+data.scan[i].mac+'</span><input type = \'password\' placeholder = \'Password\' /><a class="waves-effect waves-light btn xethru_btn " ng-click=\'submit_selection(password)\'>Connect</a></div></div></div></li>');
-  		}
-  	};
-    console.log(data);
-    return data;
-  }
-});
--->
-</script>
 </body>
 </html>

@@ -1,0 +1,5 @@
+gawk
+isc-dhcp-server
+hostapd
+iw
+python-dev

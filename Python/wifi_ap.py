@@ -1,4 +1,4 @@
-import subprocess, json, os, jinja2
+import time
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
 from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
@@ -43,8 +43,10 @@ def check_connectivity():
     return jsonify({'status' : ap.check_connectivity()})
 
 if __name__ == '__main__':
-    if(ap.check_connection("wlan0")):
-        return
+    while(ap.check_connection("wlan0")):
+        time.sleep(10)
+	print "Wifi allready connected"
+        
     #Sets up the necessary config files for access point moode
     ap.setup()
     #Sets the raspberry into Access point mode

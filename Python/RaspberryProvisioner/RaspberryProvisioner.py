@@ -45,6 +45,7 @@ class RaspberryProvisioner:
     def connect_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
         output = "/etc/network/interfaces"
+	info['interface'] = self.config['interface']
         self.write_config(info,path,output)
         self.teardown()
    
@@ -137,6 +138,9 @@ class RaspberryProvisioner:
         out = ni.ifaddresses(interface)
         try:
            ip = out[2][0]['addr']
+           print ip
+           if ip == self.config['ip']:
+               return False
            return True
         except:
             self.setup()

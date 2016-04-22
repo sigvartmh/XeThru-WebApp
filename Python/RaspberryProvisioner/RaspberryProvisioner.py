@@ -1,4 +1,4 @@
-import subprocess, json, os, jinja2, time, socket
+import subprocess, json, os, jinja2, time, urllib2
 import netifaces as ni
 
 class RaspberryProvisioner:
@@ -53,6 +53,7 @@ class RaspberryProvisioner:
 	print "resetting interfaces from connection"
         self.reset_interfaces()
 	self.check_wifi()
+	self.check_connectivity()
 	pass
         #service isc-dhcp-server stop
     
@@ -120,7 +121,7 @@ class RaspberryProvisioner:
         with open(output, "w") as conf:
             conf.write(temp)
     
-    def check_connection():
+    def check_connection(self):
         subprocess.call(["ping", "-i", self.config['interface'], self.config['server']])
 
     def check_wifi(self):
@@ -132,16 +133,14 @@ class RaspberryProvisioner:
 	   self.setup()
 	   self.enable()
            print "No connection restarting AP"
-    def check_connectivity():
-	server = "8.8.8.8"
-	print "Checking for connectivity"
-	print server
+
+    def check_connectivity(self):
 	try:
-	    s = socket.create_connection((host, 800), 2)
+	    response=urllib2.urlopen('http://google.com',timeout=1)
+	    print response
 	    return True
-        except:
-	    print "Not connection"
-	    return False
+        except urllib2.URLError as err:
+	    return False	        
 
 #if __name__ == '__main__':
 #    rp = RaspberryProvisioner()

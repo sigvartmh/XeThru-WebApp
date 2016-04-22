@@ -52,7 +52,7 @@ if __name__ == '__main__':
     #Sets the raspberry into Access point mode
     ap.enable()
     #Start flask server
-    app.run(host="0.0.0.0",port=80,debug=False)
+    app.run(host="0.0.0.0",port=80,debug=True)
 
   #gawk -F: '{ print $1 }' /etc/passwd
 

@@ -38,14 +38,10 @@ def setup_wifi():
     response = { 'status': "sucess"}
     return jsonify(response)
 
-@app.route('/wlan/api/connectivity', methods=['GET'])
+@app.route('/wlan/api/connectivity',methods=['GET'])
 def check_connectivity():
     return jsonify({'status' : ap.check_connectivity()})
 
 if __name__ == '__main__':
-    #Sets up the necessary config files for access point moode
-    ap.setup()
-    #Sets the raspberry into Access point mode
-    ap.enable()
     #Start flask server
     app.run(host="0.0.0.0",port=80,debug=True)

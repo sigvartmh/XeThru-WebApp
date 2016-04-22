@@ -35,6 +35,10 @@ class RaspberryProvisioner:
         out = subprocess.call(["sudo", "service", "hostapd", command])
         print "hostapd " + command
     
+    def dnsmasq_service(self, command):
+        out = subprocess.call(["sudo", "service", "dnsmasq", command])
+        print "dnsmasq " + command
+    
     def connect_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
         output = "/etc/network/interfaces"
@@ -49,12 +53,14 @@ class RaspberryProvisioner:
     def enable(self):
         self.dhcp_service("start")
         self.hostapd_service("start")
+        self.dnsmasq_service("start")
 
 
     def setup(self):
-        #stop services
+        #Stop services
         self.dhcp_service("stop")
         self.hostapd_service("stop")
+        self.dnsmasq_service("stop")
         
         #Interface setup
         #Setting up interface to be hotspot
@@ -84,8 +90,12 @@ class RaspberryProvisioner:
         output = "/etc/default/isc-dhcp-server"
         self.write_config(self.config, path, output)
 
-        #Define DNS config
-        #Load config 
+        #Define DNS config for dnsmasq
+        path = "linux_config/etc/dnsmasq.conf.template"
+        output = "/etc/dnsmasq.conf"
+        self.write_config(self.config, path, output)
+
+        #Reset interfaces to load interface config
         self.reset_interfaces()
 
     def teardown(self):
@@ -97,6 +107,7 @@ class RaspberryProvisioner:
 
         self.dhcp_service("stop")
         self.hostapd_service("stop")
+        self.dnsmasq_service("stop")
         
         pass
 

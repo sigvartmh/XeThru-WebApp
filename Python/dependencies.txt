@@ -3,3 +3,4 @@ isc-dhcp-server
 hostapd
 iw
 python-dev
+dnsmasq

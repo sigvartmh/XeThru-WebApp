@@ -5,6 +5,7 @@
 		"ssid"		:	"XeThruAP",
 		"password" 	:	"XeThru2016",
 		"domain"	:	"xethru.config",
+		"http"		:	"config.xethru.com",
 		"ip"		:	"192.168.44.1",
 		"netmask"	:	"255.255.255.0",
 		"subnet"	: {
@@ -14,6 +15,7 @@
 				"start" : "192.168.44.10",
 				"end"	: "192.168.44.50"
 			}
-		}
+		},
+		"server"	: "http://google.com"
 	}
 }

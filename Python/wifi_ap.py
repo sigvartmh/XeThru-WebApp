@@ -4,7 +4,6 @@ from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
 ap  = RP()
 
-
 @app.route('/')
 def index():
     url_for('static', filename='style.css')
@@ -21,7 +20,6 @@ def index():
 def list_wifi():
     res = ap.scan()
     return jsonify(res)
-    #return jsonify({'scan': sresult})
 
 @app.route('/font/roboto/<path:filename>')
 def send_font(filename):
@@ -34,17 +32,15 @@ def send_test(path):
 
 @app.route('/wlan/api/connect', methods=['POST'])
 def setup_wifi():
-    print request.json
     if not request.json or not 'ssid' in request.json:
         abort(400)
-    print request.json
-    #replace ssid and pwd in template
     ap.connect_wifi(request.json)
     response = { 'status': "sucess"}
     return jsonify(response)
 
-def check_connectivity(): #If this false restart AP
-    return True
+@app.route('/wlan/api/connectivity', methods=['GET'])
+def check_connectivity():
+    return jsonify({'status' : ap.check_connectivity()})
 
 if __name__ == '__main__':
     #Sets up the necessary config files for access point moode
@@ -52,8 +48,4 @@ if __name__ == '__main__':
     #Sets the raspberry into Access point mode
     ap.enable()
     #Start flask server
-    app.run(host="0.0.0.0",port=80,debug=False)
-
-  #gawk -F: '{ print $1 }' /etc/passwd
-
-  #"iw dev wlan0 scan | gawk -f wifi_scan.awk"
+    app.run(host="0.0.0.0",port=80,debug=True)

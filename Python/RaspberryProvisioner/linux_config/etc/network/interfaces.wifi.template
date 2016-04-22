@@ -7,8 +7,8 @@ auto lo
 iface lo inet loopback
 iface eth0 inet dhcp
 
-auto wlan0
-allow-hotplug wlan0
-iface wlan0 inet dhcp
+auto {{ interface }}
+allow-hotplug {{ interface }}
+iface {{ interface }} inet dhcp
   wpa-ssid "{{ ssid }}"
   wpa-psk  "{{ password }}"

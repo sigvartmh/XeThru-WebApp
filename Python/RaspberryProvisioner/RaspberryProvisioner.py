@@ -30,14 +30,17 @@ class RaspberryProvisioner:
     def dhcp_service(self, command):
         out = subprocess.call(["sudo", "service", "isc-dhcp-server", command])
         print "DHCP server " + command
+        pass
     
     def hostapd_service(self, command):
         out = subprocess.call(["sudo", "service", "hostapd", command])
         print "hostapd " + command
+        pass
     
     def dnsmasq_service(self, command):
         out = subprocess.call(["sudo", "service", "dnsmasq", command])
         print "dnsmasq " + command
+        pass
     
     def connect_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
@@ -47,7 +50,7 @@ class RaspberryProvisioner:
    
         print "Resetting interfaces from connection"
         self.reset_interfaces()
-        self.check_wifi()
+        self.check_wifi(self.config['interface'])
         pass
     
     def enable(self):
@@ -130,28 +133,27 @@ class RaspberryProvisioner:
         with open(output, "w") as conf:
             conf.write(temp)
     
-    def check_connection(self):
-        subprocess.call(["ping", "-i", self.config['interface'], self.config['server']])
-
-    def check_wifi(self):
-        out = ni.ifaddresses('wlan0')
-        print out
-        
+    def check_wifi(self,interface):
+        out = ni.ifaddresses(interface)
         try:
            ip = out[2][0]['addr']
+           return True
         except:
-	   self.setup()
-	   self.enable()
-           print "No ip from wifi  restarting AP"
+            self.setup()
+            self.enable()
+            print "No Ip obtained from wifi restarting AP"
+            return False
 
     def check_connectivity(self):
-	try:
-	    response=urllib2.urlopen('http://google.com',timeout=1)
-	    print response
-	    return True
+        try:
+            response=urllib2.urlopen('http://google.com',timeout=1)
+            print response
+            return True
+        
         except urllib2.URLError as err:
-            print "Failed connecting to the web restarting AP"
-            return False   
+            print err
+            print "Failed pinging google"
+            return False  
 
 if __name__ == '__main__':
     rp = RaspberryProvisioner()

@@ -1,6 +1,13 @@
 #!/bin/bash
-sudo apt-get update
+if [[ $UID != 0 ]]; then
+    echo "Please run script as sudo:"
+    sudo bash $0 $*
+    exit 1
+fi
+
+apt-get update
 for i in `cat dependencies.txt`;
-do sudo apt-get install $i -y;
+do apt-get install $i -y;
 done
 pip install -r requirements.txt
+apt-get remove python-dev

@@ -1,0 +1,37 @@
+#! /bin/sh
+# /etc/init.d/xethru-ap
+
+### BEGIN INIT INFO
+# Provides:          xethru-ap
+# Required-Start:    $local_fs $syslog $network
+# Required-Stop:     $local_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Script to ensure wifi connectivity
+# Description:       A Flask application to ensure Wifi connectivity by setting the RPI as an AP if needed
+### END INIT INFO
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting XeThru Wlan config service"
+    cd /media/external/XeThru-WebApp/Python
+    sudo /usr/bin/python wifi_ap.py &
+    echo $! > flask.pid
+    ;;
+  stop)
+    echo "Stopping XeThru Wlan service"
+    PIDFile=/home/pi/raspberry-wifi-conf/flask.pid
+    if [ -f $PIDFile ]; then
+        sudo kill -9 $(cat $PIDFile)
+        sudo kill -9 $(($(cat $PIDFile) + 1))
+        sudo rm $PIDFile
+    fi
+    ;;
+  *)
+    echo "Usage: /etc/init.d/xethru-ap {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

@@ -1,4 +1,4 @@
-import subprocess, json, os, jinja2, time, socket
+import subprocess, json, os, jinja2, time, urllib2
 import netifaces as ni
 
 class RaspberryProvisioner:
@@ -29,43 +29,45 @@ class RaspberryProvisioner:
 
     def dhcp_service(self, command):
         out = subprocess.call(["sudo", "service", "isc-dhcp-server", command])
-        print out
         print "DHCP server " + command
+        pass
     
     def hostapd_service(self, command):
         out = subprocess.call(["sudo", "service", "hostapd", command])
-        print out
-        #service hostapd restart
         print "hostapd " + command
+        pass
+    
+    def dnsmasq_service(self, command):
+        out = subprocess.call(["sudo", "service", "dnsmasq", command])
+        print "dnsmasq " + command
+        pass
     
     def connect_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
         output = "/etc/network/interfaces"
+	info['interface'] = self.config['interface']
         self.write_config(info,path,output)
-
-        path = "linux_config/etc/dhcp/dhcpd.conf.template"
-        output = "/etc/dhcp/dhcpd.conf"
-        self.config["enable_ap"] = False
-        self.write_config(self.config, path, output)
-
-        self.dhcp_service("stop")
-        self.hostapd_service("stop")
-	print "resetting interfaces from connection"
+        self.teardown()
+   
+        print "Resetting interfaces from connection"
         self.reset_interfaces()
-	self.check_wifi()
-	pass
-        #service isc-dhcp-server stop
+        self.check_connection(self.config['interface'])
+        pass
     
     def enable(self):
         self.dhcp_service("start")
         self.hostapd_service("start")
+        self.dnsmasq_service("start")
 
 
     def setup(self):
-        #stop services
+        #Stop services
         self.dhcp_service("stop")
         self.hostapd_service("stop")
-        #write
+        self.dnsmasq_service("stop")
+        
+        #Interface setup
+        #Setting up interface to be hotspot
         path = "linux_config/etc/network/interfaces.ap.template"
         output = "/etc/network/interfaces"
         self.write_config(self.config, path, output)
@@ -76,6 +78,7 @@ class RaspberryProvisioner:
         output = "/etc/hostapd/hostapd.conf"
         self.write_config(self.config, path, output)
 
+        #Setting up default hostapd source file to hostapd.conf
         path = "linux_config/etc/default/hostapd.template"
         output = "/etc/default/hostapd"
         self.write_config(self.config, path, output)
@@ -86,29 +89,40 @@ class RaspberryProvisioner:
         self.config["enable_ap"] = True
         self.write_config(self.config, path, output)
 
-        #Define DHCP isc server config
+        #Define DHCP isc-server config
         path = "linux_config/etc/default/isc-dhcp-server.template"
         output = "/etc/default/isc-dhcp-server"
         self.write_config(self.config, path, output)
 
-        #Define DNS config
-        #Load config 
+        #Define DNS config for dnsmasq
+        path = "linux_config/etc/dnsmasq.conf.template"
+        output = "/etc/dnsmasq.conf"
+        self.write_config(self.config, path, output)
+
+        #Reset interfaces to load interface config
         self.reset_interfaces()
 
-    def teardown_ap(self):
-        path = "linux_config/etc/hostapd/hostapd.conf.template"
-        output = "etc/hostapd/hostapd.conf"
+    def teardown(self):
+        path = "linux_config/etc/dhcp/dhcpd.conf.template"
+        output = "/etc/dhcp/dhcpd.conf"
+        
         self.config["enable_ap"] = False
         self.write_config(self.config, path, output)
+
+        self.dhcp_service("stop")
+        self.hostapd_service("stop")
+        self.dnsmasq_service("stop")
+        
         pass
 
     def reset_interfaces(self):
         print "Restarting interface " + str(self.config['interface'])
+        
         out = subprocess.call(["sudo", "ifdown", self.config['interface']])
         time.sleep(1)
-	#Maybe use Popen
         out = subprocess.call(["sudo", "ifup", self.config['interface']])
-	pass
+
+        pass
 
     def write_config(self,var, path, output):
         template = self.env.get_template(path)
@@ -120,29 +134,32 @@ class RaspberryProvisioner:
         with open(output, "w") as conf:
             conf.write(temp)
     
-    def check_connection():
-        subprocess.call(["ping", "-i", self.config['interface'], self.config['server']])
-
-    def check_wifi(self):
-	out = ni.ifaddresses('wlan0')
-        print out
+    def check_connection(self,interface):
+        out = ni.ifaddresses(interface)
         try:
            ip = out[2][0]['addr']
+           print ip
+           if ip == self.config['ip']:
+               return False
+           return True
         except:
-	   self.setup()
-	   self.enable()
-           print "No connection restarting AP"
-    def check_connectivity():
-	server = "8.8.8.8"
-	print "Checking for connectivity"
-	print server
-	try:
-	    s = socket.create_connection((host, 800), 2)
-	    return True
-        except:
-	    print "Not connection"
-	    return False
+            self.setup()
+            self.enable()
+            print "No Ip obtained from wifi restarting AP"
+            return False
 
-#if __name__ == '__main__':
-#    rp = RaspberryProvisioner()
-#    rp.setup_ap()
+    def check_connectivity(self):
+        try:
+            response=urllib2.urlopen('http://google.com',timeout=1)
+            print response
+            return True
+        
+        except urllib2.URLError as err:
+            print err
+            print "Failed pinging google"
+            return False  
+
+if __name__ == '__main__':
+    rp = RaspberryProvisioner()
+    rp.setup()
+    rp.enable()

@@ -1,14 +1,7 @@
-import time
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
 from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
 ap  = RP()
-
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
 
 @app.route('/')
 def index():
@@ -24,7 +17,11 @@ def index():
 
 @app.route('/wlan/api/scan', methods=['GET'])
 def list_wifi():
-    res = ap.scan()
+    res = {"scan":[{"ssid":"test",
+            "encryption" : 
+            "WPA",
+            "mac" :"f4:cf:e2:40:a3:30"},
+            {"ssid":"test3","encryption" : "WPA","mac" :"f3:cf:e2:40:a3:30"}]}
     return jsonify(res)
 
 @app.route('/font/roboto/<path:filename>')
@@ -44,18 +41,10 @@ def setup_wifi():
     response = { 'status': "sucess"}
     return jsonify(response)
 
-@app.route('/wlan/api/connectivity', methods=['GET'])
+@app.route('/wlan/api/connectivity',methods=['GET'])
 def check_connectivity():
     return jsonify({'status' : ap.check_connectivity()})
 
 if __name__ == '__main__':
-    #FIXME: This check should also be running while flask server is running.
-    while(ap.check_connection("wlan0")): #TODO: could add  or (ap.check_connection("eth0") && ap.check_connectivity())
-        time.sleep(10)
-   
-    #Sets up the necessary config files for access point mode
-    ap.setup()
-    #Sets the raspberry into Access point mode
-    ap.enable()
     #Start flask server
-    app.run(host="0.0.0.0",port=80,debug=True)
+    app.run(host="0.0.0.0",port=3000,debug=True)

@@ -1,8 +1,9 @@
 package main
 
 import (
-	//	"fmt"
+	//"fmt"
 	"net"
+	//"reflect"
 	"time"
 )
 
@@ -14,19 +15,20 @@ func main() {
 		ifaces, _ := net.Interfaces()
 
 		for _, i := range ifaces {
-			if i.Name == "en0" {
+			if i.Name == "wlan0" {
 				mac = i.HardwareAddr
 				addrs, _ := i.Addrs()
 				for _, v := range addrs {
 					switch T := v.(type) {
 					case *net.IPNet:
-						ip = T.IP
+						if T.IP.To4() != nil {
+							ip = T.IP
+						}
 					}
 				}
 			}
 		}
 		ip[15] = 255
-
 		saddr, _ := net.ResolveUDPAddr("udp", ip.String()+":3001")
 		Conn, _ := net.DialUDP("udp", nil, saddr)
 		Conn.Write([]byte(mac.String()))

@@ -16,6 +16,9 @@
                 "end"   : "192.168.44.50"
             }
         },
-        "server"    : "http://google.com"
+        "ping"      : "http://google.com",
+        "server"    : "http://google.com",
+        "radardir"  : ".",
+        "uploadserver": "http://me.sigvarth.org/uploadtest"
     }
 }

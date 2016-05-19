@@ -1,4 +1,4 @@
-import subprocess, json, os, jinja2, time, urllib2
+import subprocess, json, os, jinja2, time, urllib2, glob
 import netifaces as ni
 
 class RaspberryProvisioner:
@@ -45,7 +45,7 @@ class RaspberryProvisioner:
     def connect_wifi(self,info):
         path = "linux_config/etc/network/interfaces.wifi.template"
         output = "/etc/network/interfaces"
-	info['interface'] = self.config['interface']
+        info['interface'] = self.config['interface']
         self.write_config(info,path,output)
         self.teardown()
    
@@ -58,7 +58,7 @@ class RaspberryProvisioner:
         self.dhcp_service("start")
         self.hostapd_service("start")
         self.dnsmasq_service("start")
-
+        pass
 
     def setup(self):
         #Stop services
@@ -101,6 +101,7 @@ class RaspberryProvisioner:
 
         #Reset interfaces to load interface config
         self.reset_interfaces()
+        pass
 
     def teardown(self):
         path = "linux_config/etc/dhcp/dhcpd.conf.template"
@@ -112,12 +113,12 @@ class RaspberryProvisioner:
         self.dhcp_service("stop")
         self.hostapd_service("stop")
         self.dnsmasq_service("stop")
-        
+
         pass
 
     def reset_interfaces(self):
         print "Restarting interface " + str(self.config['interface'])
-        
+
         out = subprocess.call(["sudo", "ifdown", self.config['interface']])
         time.sleep(1)
         out = subprocess.call(["sudo", "ifup", self.config['interface']])
@@ -133,7 +134,7 @@ class RaspberryProvisioner:
             raise
         with open(output, "w") as conf:
             conf.write(temp)
-    
+
     def check_connection(self,interface):
         out = ni.ifaddresses(interface)
         try:
@@ -153,11 +154,49 @@ class RaspberryProvisioner:
             response=urllib2.urlopen('http://google.com',timeout=1)
             print response
             return True
-        
+
         except urllib2.URLError as err:
             print err
             print "Failed pinging google"
-            return False  
+            return False
+
+    def check_radar(self):
+        search=os.path.join(self.config['radardir'], '*.[Cc][Ss][Vv]')
+        newest = max(glob.iglob(search), key=os.path.getctime))
+        statinfo = os.stat(newest)
+        if(statinfo.st_size):
+            return True
+        else:
+            return False
+
+    def upload_speed(self, size):
+        data=''.join("1" for x in xrange (size))
+        params = urllib.urlencode({'data': data })
+        req = urllib2.Request(self.config['uploadserver'])
+        starttime = time.time
+        res = urllib2.urlopen(req, timeout=10);
+        endtime = datetime.datetime.now()
+        bytespersec = bytestransfered / (endtime - starttime)
+        return bytespersec
+
+    def latency(self,count):
+        averagetime=0
+        total=0
+        for i in range(count):
+            error=0
+            startTime = time.time()
+            try:
+                response = urllib2.urlopen('http://google.com', timeout = 5)
+            except (urllib2.URLError, socket.timeout), e:
+                error=1
+
+            if error==0:
+                averagetime = averagetime + (time.time() - startTime)
+                total=total+1
+            if total==0:
+                return False
+
+        return averagetime/total
 
 if __name__ == '__main__':
     rp = RaspberryProvisioner()

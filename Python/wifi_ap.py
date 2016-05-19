@@ -22,7 +22,7 @@ def index():
     url_for('static', filename='app.js')
     return render_template('index.html')
 
-@app.route('/wlan/api/scan', methods=['GET'])
+@app.route('/api/wlan/scan', methods=['GET'])
 def list_wifi():
     res = ap.scan()
     return jsonify(res)
@@ -32,30 +32,41 @@ def send_font(filename):
     print send_from_directory('font/roboto/', filename)
     return send_from_directory('font/roboto/', filename)
 
-@app.route('/font/<path:path>')
-def send_test(path):
-    return "test:" + path
-
-@app.route('/wlan/api/connect', methods=['POST'])
+@app.route('/api/wlan/connect', methods=['POST'])
 def setup_wifi():
     if not request.json or not 'ssid' in request.json:
         abort(400)
     ap.connect_wifi(request.json)
-    response = { 'status': "sucess"}
+    response = { 'status': "success"}
     return jsonify(response)
 
-@app.route('/wlan/api/connectivity', methods=['GET'])
+@app.route('/api/wlan/connectivity', methods=['GET'])
 def check_connectivity():
     return jsonify({'status' : ap.check_connectivity()})
 
+@app.route('/api/wlan/uploadspeed', methods=['POST'])
+def check_uploadspeed():
+    if not request.json or not 'size' in request.json:
+        abort(400)
+    ap.upload_speed
+    return jsonify({'speed' : ap.upload_speed()})
+
+def check_connection():
+    wlan = ap.check_connection("wlan0")
+    eth0 = ap.check_connection("eth0")
+    connection = ap.check_connectivity()
+    if((wlan or eth0) and connection):
+        return True
+    else:
+        return False
+
 if __name__ == '__main__':
-    #FIXME: This check should also be running while flask server is running.
-    while(ap.check_connection("wlan0")): #TODO: could add  or (ap.check_connection("eth0") && ap.check_connectivity())
-        time.sleep(10)
-   
-    #Sets up the necessary config files for access point mode
-    ap.setup()
-    #Sets the raspberry into Access point mode
-    ap.enable()
-    #Start flask server
-    app.run(host="0.0.0.0",port=80,debug=True)
+    if(check_connection()):
+        app.run(host="0.0.0.0",port=80,debug=False)
+    else:
+        #Sets up the necessary config files for access point mode
+        ap.setup()
+        #Sets the raspberry into Access point mode
+        ap.enable()
+        #Start flask server
+        app.run(host="0.0.0.0",port=80,debug=False)

@@ -1,7 +1,9 @@
 import time
+from flask.ext.cors import CORS
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
 from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
+CORS(app)
 ap  = RP()
 
 def shutdown_server():

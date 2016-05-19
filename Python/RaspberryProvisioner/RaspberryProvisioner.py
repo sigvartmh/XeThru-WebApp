@@ -162,7 +162,7 @@ class RaspberryProvisioner:
 
     def check_radar(self):
         search=os.path.join(self.config['radardir'], '*.[Cc][Ss][Vv]')
-        newest = max(glob.iglob(search), key=os.path.getctime))
+        newest = max(glob.iglob(search), key=os.path.getctime)
         statinfo = os.stat(newest)
         if(statinfo.st_size):
             return True

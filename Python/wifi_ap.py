@@ -1,7 +1,9 @@
 import time
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
+from flask.ext.cors import CORS
 from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
+CORS(app)
 ap  = RP()
 
 def shutdown_server():
@@ -50,8 +52,8 @@ def check_connectivity():
 
 if __name__ == '__main__':
     #FIXME: This check should also be running while flask server is running.
-    while(ap.check_connection("wlan0")): #TODO: could add  or (ap.check_connection("eth0") && ap.check_connectivity())
-        time.sleep(10)
+    if(ap.check_connection("wlan0")): #TODO: could add  or (ap.check_connection("eth0") && ap.check_connectivity())
+        app.run(host="0.0.0.0",port=80,debug=True)
    
     #Sets up the necessary config files for access point mode
     ap.setup()

@@ -90,12 +90,12 @@ app.service("XTWlanManager", ["$http",
         return {
             rescan_wifi: function() {
                 console.log("Rescanning");
-                var t = $http.get("wlan/api/scan");
+                var t = $http.get("/api/wlan/scan");
                 console.log(t)
                 return t;
             },
             enable_wifi: function(wifi_info) {
-                return $http.post("/wlan/api/connect", wifi_info);
+                return $http.post("/api/wlan/connect", wifi_info);
             }
         };
     }]

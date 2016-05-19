@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"net"
 	//"reflect"
 	"time"
@@ -10,29 +10,30 @@ import (
 func main() {
 	var ip net.IP
 	var mac net.HardwareAddr
-
+	var addrs []net.Addr
 	for {
 		ifaces, _ := net.Interfaces()
 
 		for _, i := range ifaces {
 			if i.Name == "wlan0" {
 				mac = i.HardwareAddr
-				addrs, _ := i.Addrs()
-				for _, v := range addrs {
-					switch T := v.(type) {
-					case *net.IPNet:
-						if T.IP.To4() != nil {
-							ip = T.IP
-						}
-					}
-				}
+				addrs, _ = i.Addrs()
+
 			}
 		}
-		ip[15] = 255
-		saddr, _ := net.ResolveUDPAddr("udp", ip.String()+":3001")
-		Conn, _ := net.DialUDP("udp", nil, saddr)
-		Conn.Write([]byte(mac.String()))
-		Conn.Close()
-		time.Sleep(500 * time.Millisecond)
+
+		for _, ipaddr := range addrs {
+			ip = ipaddr.(*net.IPNet).IP
+			if ip.To4() != nil {
+				ip[15] = 255
+				fmt.Println("Broadcasting on:", ip)
+				saddr, _ := net.ResolveUDPAddr("udp", ip.String()+":3001")
+				Conn, _ := net.DialUDP("udp", nil, saddr)
+				Conn.Write([]byte(mac.String()))
+				Conn.Close()
+				time.Sleep(1000 * time.Millisecond)
+			}
+		}
+		time.Sleep(1000 * time.Millisecond)
 	}
 }

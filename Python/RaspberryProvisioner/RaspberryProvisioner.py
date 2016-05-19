@@ -140,6 +140,7 @@ class RaspberryProvisioner:
         try:
            ip = out[2][0]['addr']
            print ip
+           print out
            if ip == self.config['ip']:
                return False
            return True
@@ -152,7 +153,7 @@ class RaspberryProvisioner:
     def check_connectivity(self):
         try:
             response=urllib2.urlopen('http://google.com',timeout=1)
-            print response
+            print response.getcode()
             return True
 
         except urllib2.URLError as err:

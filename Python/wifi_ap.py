@@ -50,8 +50,11 @@ def check_connectivity():
 def check_uploadspeed():
     if not request.json or not 'size' in request.json:
         abort(400)
-    ap.upload_speed
-    return jsonify({'speed' : ap.upload_speed()})
+    return jsonify({'speed' : ap.upload_speed(request.json['size'])})
+
+@app.route('/api/radar/status', methods=['GET'])
+def radar_status():
+    return jsonify({'status' : ap.check_radar()})
 
 def check_connection():
     wlan = ap.check_connection("wlan0")

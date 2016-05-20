@@ -1,6 +1,7 @@
 import time
 from flask.ext.cors import CORS
 from flask import Flask, jsonify, render_template, url_for, send_from_directory, request, abort
+from flask.ext.cors import CORS
 from RaspberryProvisioner import RaspberryProvisioner as RP
 app = Flask(__name__)
 CORS(app)
@@ -75,7 +76,7 @@ def check_connection():
 
 if __name__ == '__main__':
     if(check_connection()):
-        app.run(host="0.0.0.0",port=80,debug=False)
+        app.run(host="0.0.0.0",port=80,debug=True)
     else:
         #Sets up the necessary config files for access point mode
         ap.setup()

@@ -58,6 +58,11 @@ def check_uploadspeed():
 def radar_status():
     return jsonify({'status' : ap.check_radar()})
 
+@app.route('/api/server/status', methods=['GET'])
+def server_connectivity():
+    return jsonify({'status' : ap.server_connectivity()})
+
+
 @app.route('/api/interface/status', methods=['POST'])
 def interface_status():
     if not request.json or not 'interface' in request.json:

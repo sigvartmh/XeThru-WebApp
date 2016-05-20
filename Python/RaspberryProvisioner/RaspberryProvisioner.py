@@ -150,10 +150,18 @@ class RaspberryProvisioner:
 
     def check_connectivity(self):
         try:
-            response=urllib2.urlopen('http://google.com',timeout=1)
+            response=urllib2.urlopen(self.config['ping'],timeout=30)
             print response.getcode()
             return True
 
+        except urllib2.URLError as err:
+            print err
+            print "Failed pinging google"
+            return False
+    def server_connectivity(self):
+        try:
+            response=urllib2.urlopen(self.config['server'], timeout=10)
+            return True
         except urllib2.URLError as err:
             print err
             print "Failed pinging google"
@@ -172,7 +180,7 @@ class RaspberryProvisioner:
         data=''.join("1" for x in xrange (size))
         params = urllib.urlencode({'data': data })
         print self.config['uploadserver']
-	req = urllib2.Request(self.config['uploadserver'])
+	    req = urllib2.Request(self.config['uploadserver'])
         starttime = time.time
         res = urllib2.urlopen(req, timeout=10);
         endtime = datetime.datetime.now()

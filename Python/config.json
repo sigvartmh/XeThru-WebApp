@@ -17,7 +17,7 @@
             }
         },
         "ping"      : "http://google.com",
-        "server"    : "http://google.com",
+        "server"    : "http://me.sigvarth.org",
         "radardir"  : ".",
         "uploadserver": "http://me.sigvarth.org/uploadtest"
     }

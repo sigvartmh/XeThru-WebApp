@@ -63,7 +63,7 @@ def interface_status():
     if not request.json or not 'interface' in request.json:
         abort(400)
     print request.json
-    return jsonify({'status' : check_connection(request.json['interface'])})
+    return jsonify({'status' : ap.check_connection(request.json['interface'])})
 
 def check_connection():
     wlan = ap.check_connection("wlan0")

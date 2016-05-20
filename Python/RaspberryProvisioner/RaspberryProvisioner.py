@@ -139,8 +139,6 @@ class RaspberryProvisioner:
         out = ni.ifaddresses(interface)
         try:
            ip = out[2][0]['addr']
-           print ip
-           print out
            if ip == self.config['ip']:
                return False
            return True

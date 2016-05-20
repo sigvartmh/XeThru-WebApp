@@ -180,7 +180,7 @@ class RaspberryProvisioner:
         data=''.join("1" for x in xrange (size))
         params = urllib.urlencode({'data': data })
         print self.config['uploadserver']
-	    req = urllib2.Request(self.config['uploadserver'])
+	req = urllib2.Request(self.config['uploadserver'])
         starttime = time.time
         res = urllib2.urlopen(req, timeout=10);
         endtime = datetime.datetime.now()

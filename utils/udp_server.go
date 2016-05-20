@@ -16,7 +16,7 @@ func CheckError(err error) {
 
 func main() {
 	/* Lets prepare a address at any address at port 10001*/
-	ServerAddr, err := net.ResolveUDPAddr("udp", "0.0.0.0:3001")
+	ServerAddr, err := net.ResolveUDPAddr("udp", "0.0.0.0:8080")
 	CheckError(err)
 
 	/* Now listen at selected port */

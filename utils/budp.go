@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"net"
 	//"reflect"
 	"time"
@@ -26,8 +26,7 @@ func main() {
 			ip = ipaddr.(*net.IPNet).IP
 			if ip.To4() != nil {
 				ip[15] = 255
-				fmt.Println("Broadcasting on:", ip)
-				saddr, _ := net.ResolveUDPAddr("udp", ip.String()+":3001")
+				saddr, _ := net.ResolveUDPAddr("udp", ip.String()+":8080")
 				Conn, _ := net.DialUDP("udp", nil, saddr)
 				Conn.Write([]byte(mac.String()))
 				Conn.Close()

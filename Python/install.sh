@@ -19,5 +19,8 @@ done
 pip install -r requirements.txt
 apt-get remove python-dev
 
+broadcast="/home/pi/broadcaster"
+
 #Install crontab with starting the app on reboot
 crontab -l | { cat; echo "@reboot ${command}";} | crontab -
+crontab -l | { cat; echo "@reboot ${broadcast}";} | crontab -

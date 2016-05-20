@@ -1,17 +1,21 @@
 import subprocess, json, os, jinja2, time, urllib, urllib2, glob
 import netifaces as ni
+import inspect, os
 
 class RaspberryProvisioner:
     
     def __init__(self):
         loader = jinja2.FileSystemLoader( os.path.dirname(__file__))
         self.env = jinja2.Environment( loader=loader )
-        f = open("config.json","r")
+	self.path = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
+	path = os.path.join(self.path, '..', 'config.json')
+        f = open(path,"r")
         self.config = json.loads(f.read())['config']
         f.close()
 
     def scan(self):
-        out = subprocess.check_output(["sudo","bash", "genwifirbpi.sh"])
+        path = os.path.join(self.path, 'genwifirbpi.sh')
+        out = subprocess.check_output(["sudo","bash", path, self.path])
         escapes = ''.join([chr(char) for char in range(1, 32)])
         s = out.translate(None,escapes)
         jlist = [p+"}" for p in s.split("}") if p != ""]

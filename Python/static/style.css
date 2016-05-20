@@ -16,6 +16,10 @@
 
 }
 
+.progress {
+    margin: 0 0 1rem 0;
+}
+
 .xethru{
     color: #fff;
     font-size: 20pt;
